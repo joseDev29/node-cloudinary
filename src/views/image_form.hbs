@@ -1,0 +1,262 @@
+<style>
+    .main {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    form {
+        width: 90%;
+        min-width: 300px;
+        max-width: 450px;
+        display: flex;
+        flex-direction: column;
+        margin: 20px 10px;
+    }
+
+    form h2 {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+        font-size: 2rem;
+        color: #00a2ff;
+    }
+
+    form label {
+        margin-top: 20px;
+        font-size: 1.4rem;
+        color: #00a2ff;
+    }
+
+    form input[type=text] {
+        width: 100%;
+        height: 35px;
+        padding-left: 10px;
+        margin-top: 5px;
+        border: none;
+        border-radius: 3px;
+        font-size: 1.5rem;
+        background-color: #ededed;
+        color: #575757;
+
+    }
+
+    form input:focus,
+    textarea {
+        outline: none;
+        border-width: 2.5px;
+    }
+
+    form input[type=file] {
+        display: none;
+    }
+
+    form textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        margin-top: 5px;
+        border: none;
+        border-radius: 3px;
+        font-size: 1.8rem;
+        background-color: #ededed;
+        color: #575757;
+    }
+
+    form div {
+        width: 100%;
+        height: 35px;
+        margin-top: 20px;
+        display: flex;
+
+    }
+
+    form div a {
+        display: inline-block;
+        height: 100%;
+        width: 35%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 3px 0 0 3px;
+        background-color: #ededed;
+        color: #575757;
+        font-size: 1.5rem;
+    }
+
+    form div a:hover {
+        cursor: pointer;
+    }
+
+    form div p {
+        display: inline-block;
+        width: 65%;
+        height: 100%;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        border-radius: 0 3px 3px 0;
+        border: 2px solid #ededed;
+        font-size: 1.3rem;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        color: #575757;
+
+    }
+
+    form button {
+        width: 100%;
+        height: 40px;
+        margin-top: 25px;
+        border: none;
+        border-radius: 3px;
+        font-size: 1.6rem;
+        color: #fff;
+        background-color: #00a2ff;
+    }
+
+    .images-data-container {
+        width: 90%;
+        min-width: 300px;
+        max-width: 450px;
+        margin: 20px 10px;
+    }
+
+    .images-data-container h3 {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2rem;
+        color: #fa1111;
+    }
+
+    .images-data-container article {
+        width: 100%;
+        padding: 15px;
+        margin-top: 5px;
+        border: none;
+        border-radius: 3px;
+        background-color: #ededed;
+    }
+
+    .images-data-container h2 {
+        font-size: 1.8rem;
+    }
+
+    .images-data-container p {
+        display: inline-block;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 8px;
+        font-size: 1.4rem;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .images-data-container div {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
+    }
+
+    .images-data-container a {
+        display: inline-block;
+        width: 80px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #fff;
+        font-size: 1.5rem;
+        border: none;
+        border-radius: 3px;
+        background-color: #00a2ff;
+    }
+
+    .images-data-container button {
+        width: 80px;
+        height: 35px;
+        border: none;
+        border-radius: 3px;
+        color: #fff;
+        font-size: 1.5rem;
+        background-color: #fa1111;
+        margin-left: 10px;
+    }
+
+    @media (min-width: 1024px) {
+        .main {
+            justify-content: space-around;
+        }
+    }
+</style>
+<div class="main">
+    <form action="/images/add" method="POST" enctype="multipart/form-data">
+        <h2>Upload Image</h2>
+        <label for="">Title</label>
+        <input type="text" name="img-title" placeholder="Image title" required>
+        <label for="">Description</label>
+        <textarea name="img-description" id="img-description" cols="30" rows="10"
+            placeholder="Image description"></textarea>
+        <div>
+            <a id="btn-file">Select file</a>
+            <p id="file-name">No file selected</p>
+        </div>
+        <input type="file" name="image-file" id="image-file" required>
+        <button type="submit">Upload image</button>
+    </form>
+
+    <div class="images-data-container">
+        <h3>Images Data</h3>
+        {{#each images}}
+
+        <article>
+            <h2>{{title}}</h2>
+            <p>{{description}}</p>
+            <div>
+                <a href="{{imageURL}}">View</a>
+                <button type="button" onclick="deleteImg(this)" data-image-id="{{_id}}">Delete</button>
+            </div>
+        </article>
+
+        {{/each}}
+    </div>
+</div>
+
+<script>
+    async function deleteImg(elem) {
+        const image_id = elem.dataset.imageId
+        const request = await window.fetch(`/images/delete/${image_id}`, {
+            method: "DELETE"
+        })
+
+        if (request.ok) {
+            location.href = "/images/add"
+        } else {
+            console.error("Pailongas")
+        }
+    }
+</script>
+<script>
+    const fileInput = document
+        .querySelector("#btn-file")
+        .addEventListener("click", (e) => {
+            e.preventDefault();
+            document.querySelector("#image-file").click();
+        });
+
+    document.querySelector("#image-file").addEventListener("change", (e) => {
+        if (e.target.value) {
+            document.querySelector("#file-name").innerText = e.target.value.match(
+                /[\/\\]([\w\d\s\.\-\(\)]+)$/
+            )[1];
+        } else {
+            document.querySelector("#file-name").innerText = `No file selected`;
+        }
+    });
+</script>
